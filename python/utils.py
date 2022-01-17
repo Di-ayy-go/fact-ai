@@ -6,3 +6,6 @@ class SecretaryInstance(object):
         self.value = value
         self.color = color
         self.type = type
+
+    def __str__(self):
+        return f"Value: {self.value}, Color: {self.color}, Type: {self.type}"

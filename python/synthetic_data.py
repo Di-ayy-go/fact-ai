@@ -1,10 +1,10 @@
 import sys
 from utils import SecretaryInstance
 from random_handler import RandomHandler
-import distributions
+from distributions import RandomDistribution
 
 rh = RandomHandler()
-def GetSecretaryInput(sizes: list, prob: list):
+def GetSecretaryInput(sizes: list, prob = []):
     """
     """
     num_colors = len(sizes)
@@ -12,16 +12,16 @@ def GetSecretaryInput(sizes: list, prob: list):
     rand = 2.0
     if len(prob) >  0:
         rand = rh.eng() / 1e16
+        print(rand)
 
     for i in range(len(sizes)):
 
         for j in range(i):
             instance.append(SecretaryInstance(rh.eng() / 10, i))
-
         if len(prob) > 0:
 
             if prob[i] > rand and rand >= 0:
-                instance[len(instance)].value = 2147483647
+                instance[len(instance) - 1].value = float('inf')
 
         rand -= prob[i]
 
