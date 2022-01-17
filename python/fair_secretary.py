@@ -5,7 +5,6 @@ def FairSecretaryAlgorithm(elements, num_colors, thre):
     # Compute max values
     for i in range(len(elements)):
         if i < thre[elements[i].color]:
-            print(elements[i].color, elements[i].value)
             max_color[elements[i].color] = max([max_color[elements[i].color], elements[i].value])
 
     # Return best candidate
