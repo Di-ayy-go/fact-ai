@@ -13,7 +13,7 @@ class RandomDistribution(object):
         return self.distributions[key]
 
 
-class UniformDistributions(sc.distributions.rv_frozen):
+class UniformDistribution(sc.distributions.rv_frozen):
     """docstring for UniformDistribution."""
 
     def __init__(self, loc, scale, n):
