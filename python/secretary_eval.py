@@ -1,7 +1,9 @@
 import numpy as np
 
 def Eval(instance, answer, num_colors):
-    max_value = correct_answer = num_answer =  np.zeros(num_colors)
+    max_value = np.zeros(num_colors)
+    correct_answer = np.zeros(num_colors)
+    num_answer =  np.zeros(num_colors)
 
     total_max = 0
     not_picked = 0
@@ -9,7 +11,7 @@ def Eval(instance, answer, num_colors):
 
     for i in range(len(instance)):
         max_value[instance[i].color] = max([max_value[instance[i].color], instance[i].value])
-
+   
     for i in range(num_colors):
         total_max = max([max_value[i], total_max])
 
@@ -26,9 +28,12 @@ def Eval(instance, answer, num_colors):
     print('\n')
 
     for element in answer:
+        # print(element)
         if element.color == -1:
             not_picked += 1
+            continue
 
+        num_answer[element.color] += 1
         if (max_value[element.color] - element.value) < 0.0000001:
             correct_answer[element.color] += 1
 
@@ -52,7 +57,7 @@ def Eval(instance, answer, num_colors):
     print(total_correct_answer / len(answer))
     print(f"Total Not Picked: {not_picked}")
 
-    return
+    return num_colors, num_answer, correct_answer
 
 def ThEval(instance, answers, num_colors):
     total_max = 0

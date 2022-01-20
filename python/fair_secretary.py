@@ -1,6 +1,6 @@
 from utils import SecretaryInstance
 
-def FairSecretaryAlgorithm(elements, num_colors, thre):
+def ComputeSolution(elements, num_colors, thre):
     max_color = num_colors * [0]
     # Compute max values
     for i in range(len(elements)):
