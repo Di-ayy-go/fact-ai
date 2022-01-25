@@ -10,7 +10,6 @@ def ComputeSolution(elements, distributions, q):
 
     return SecretaryInstance(-1, -1)
 
-# IID
 def ComputeSolutionIID(elements, distributions, q):
     p = (2 / 3) / len(elements)
     for i in range(len(elements)):

@@ -1,7 +1,6 @@
 import sys
 from utils import SecretaryInstance
 from random_handler import RandomHandler
-from distributions import RandomDistribution
 
 rh = RandomHandler()
 def GetSecretaryInput(sizes: list, prob = []):
@@ -10,7 +9,6 @@ def GetSecretaryInput(sizes: list, prob = []):
     rand = 2.0
     if len(prob) >  0:
         rand = rh.eng() / 1e16
-        # print(f"Rand: {rand}")
 
     for i in range(len(sizes)):
 
@@ -20,17 +18,31 @@ def GetSecretaryInput(sizes: list, prob = []):
         if len(prob) > 0:
 
             if prob[i] > rand and rand >= 0:
-                try:
-                    instance[len(instance) - 1].value = sys.maxsize
-                except:
-                    print(f"Index Err: {rand}, {len(instance)}")
+                instance[len(instance) - 1].value = sys.maxsize
 
-        rand -= prob[i]
+            rand -= prob[i]
 
     return instance
 
 
-def GetProphetInput(size: int, dist: RandomDistribution):
+# def GetProphetInput(size: int, dist):
+#     """
+#     """
+#     num_colors = size
+#     instance = []
+#     dist_0 = dist[0].Sample(size // 2)
+#     dist_1 = dist[1].Sample(size // 2)
+#     for i in range(size // 2):
+#         instance.append(SecretaryInstance(dist_0[i], i, 0))
+    
+#     for i in range(size // 2):
+#         instance.append(SecretaryInstance(dist_1[i], i + size // 2, 0))
+
+#     return instance
+
+
+
+def GetProphetInput(size: int, dist):
     """
     """
     num_colors = size
@@ -38,9 +50,9 @@ def GetProphetInput(size: int, dist: RandomDistribution):
     for i in range(size):
 
         if i < size / 2:
-            instance.append(SecretaryInstance(dist.r(0)), i, 0)
+            instance.append(SecretaryInstance(value=dist[0].Sample(1), color=i, type=0))
 
         else:
-            instance.append(SecretaryInstance(dist.r(1)), i, 0)
+            instance.append(SecretaryInstance(value=dist[1].Sample(1), color=i, type=1))
 
     return instance
