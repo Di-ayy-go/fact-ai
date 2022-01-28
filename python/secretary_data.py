@@ -5,6 +5,17 @@ import gzip
 import pickle
 
 def GetSecretaryInputBank(num_elements):
+    """
+    This function generates a list of candidatates
+    for the Bank data set.  
+
+    args:
+        num_elements (int): max number of candidates 
+
+    returns:
+        instance (list): list containing all candidates
+    """
+
     df = pd.read_csv('data/bank-additional-full.csv', delimiter=';')
     df = df.head(num_elements)
 
@@ -29,11 +40,22 @@ def GetSecretaryInputBank(num_elements):
     num_colors = len(colors)
 
     # print(num_colors, sizes)
-    print(len())
 
     return instance
 
 def CalculateBMI(weight, height):
+    """
+    This function calculates the BMI for a given weight 
+    and height. 
+
+    args:
+        weight (int): weight in kg 
+        height (int): height in cm
+
+    returns:
+        BMI class (int): integer of corresponding BMI class 
+    """
+
     BMI = weight / ((height/100.0)**2)
 
     if BMI < 18.5:
@@ -54,6 +76,15 @@ def CalculateBMI(weight, height):
     print("ERROR", weight, height)
 
 def GetPokecNodes():
+    """
+    This function returns the BMI classes and user id's for
+    the Pokec data set.
+
+    returns:
+        nodes (list): list of BMI classes for all candidates
+        ids (list): list of candidate id's
+    """
+
     input_bmi = "data/soc-pokec-profiles.txt.gz"
 
     nodes = []
@@ -86,6 +117,14 @@ def GetPokecNodes():
     return nodes, ids
 
 def GetPokecDegrees():
+    """
+    This function returns the degrees (number of relations) 
+    for the candidates in the Pokec data set.
+
+    returns:
+        degrees (dict): dictionary of (id: degree) pairs 
+    """
+
     input_edges = "data/soc-pokec-relationships.txt.gz"
 
     #column_1 = []
@@ -105,10 +144,22 @@ def GetPokecDegrees():
                 pass
 
     print("Degrees constructed.")
+    degrees = Counter(column_2)
 
-    return Counter(column_2)
+    return degrees
 
 def GetSecretaryInputPokec(num_elements):
+    """
+    This function generates a list of candidatates
+    for the Pokec data set.  
+
+    args:
+        num_elements (int): max number of candidates 
+
+    returns:
+        instance (list): list containing all candidates
+    """
+
     nodes, ids = GetPokecNodes()
     degrees = GetPokecDegrees()
     instance = []
@@ -124,12 +175,23 @@ def GetSecretaryInputPokec(num_elements):
 
     print(num_colors, sizes)
 
-    # with open("data/pokec_instance.dat", "wb") as f:
-    #     pickle.dump(instance, f)
+    with open("data/pokec_instance.dat", "wb") as f:
+        pickle.dump(instance, f)
 
     return instance
 
 def GetSecretaryInputUfrgs(num_elements):
+    """
+    This function generates a list of candidatates
+    for the UFRGS data set.  
+
+    args:
+        num_elements (int): max number of candidates 
+
+    returns:
+        instance (list): list containing all candidates
+    """
+
     df = pd.read_csv('data/data-UFRGS.csv', header=None)
     instance = []
 
@@ -141,7 +203,7 @@ def GetSecretaryInputUfrgs(num_elements):
     
     color_dis = Counter([element.color for element in instance])
     colors = sorted(color_dis.keys())
-
+    
     sizes = [color_dis[color] for color in colors]
     num_colors = len(colors)
 

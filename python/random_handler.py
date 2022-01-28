@@ -3,10 +3,12 @@ import numpy as np
 class RandomHandler(object):
     """docstring for RandomHandler."""
 
-    def __init__(self):
+    def __init__(self, seed):
         super(RandomHandler, self).__init__()
-        self.seed = np.random.randint(0, 1e6, size=1)[0]
-        self.rg = np.random.Generator(np.random.MT19937(self.seed))
+        self.seed = seed
+        # self.rg = np.random.Generator(np.random.MT19937(self.seed))
+        self.rg = np.random.default_rng(self.seed)
+        print(f"RH Init {seed}, {self.rg.random()}, {self.rg.random()}")
 
     def eng(self):
         return int(self.rg.random() * 1e16)

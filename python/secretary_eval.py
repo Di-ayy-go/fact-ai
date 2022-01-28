@@ -17,7 +17,7 @@ def Eval(instance, answer, num_colors):
 
     print('Color Distribution: \n')
 
-    color = np.zeros(num_colors)
+    color = np.zeros(num_colors).astype(int)
 
     for i in range(len(instance)):
         color[instance[i].color] += 1
@@ -57,7 +57,7 @@ def Eval(instance, answer, num_colors):
     print(total_correct_answer / len(answer))
     print(f"Total Not Picked: {not_picked}")
 
-    return num_colors, num_answer, correct_answer
+    return color, num_answer, correct_answer
 
 def ThEval(instance, answers, num_colors):
     total_max = 0

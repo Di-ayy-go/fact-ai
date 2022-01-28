@@ -1,46 +1,32 @@
 from utils import SecretaryInstance
 import numpy as np
 
-# SecretaryInstance UnfairProphetAlgorithm::ComputeSolutionOneHalf(
-#     const vector<SecretaryInstance>& elements,
-#     const std::vector<std::reference_wrapper<RandomDistribution>> distributions,
-#     const vector<double>& q) {
-#   for (int i = 0; i < elements.size(); i++) {
-#     if (elements[i].value >=
-#         distributions[elements[i].type].get().Middle(elements.size())) {
-#       return elements[i];
-#     }
-#   }
-#   return SecretaryInstance(-1, -1);
-# }
-
 def ComputeSolutionOneHalf(elements, distributions, q):
-    for el in elements:
-        cond = distributions[el.type].Middle(len(elements))
-        if el.value >= cond:
-            return el
+    mask = np.zeros(len(elements))
+    mask[elements.type == 0] = distributions[0].Middle(len(elements))
+    mask[elements.type == 1] = distributions[1].Middle(len(elements))
 
+    cond = elements.value >= mask
+    result = np.where(cond == True)
+    if np.sum(result) > 0:
+
+        return elements[result[0][0]]
+    
     return SecretaryInstance(-1, -1)
 
-# SecretaryInstance UnfairProphetAlgorithm::ComputeSolutionOneMinusOneE(
-#     const vector<SecretaryInstance>& elements,
-#     const std::vector<std::reference_wrapper<RandomDistribution>> distributions,
-#     const vector<double>& q) {
-#   for (int i = 0; i < elements.size(); i++) {
-#     if (elements[i].value >= distributions[elements[i].type].get().Reverse(
-#                                  1.0 - (1.0 / elements.size()))) {
-#       return elements[i];
-#     }
-#   }
-#   return SecretaryInstance(-1, -1);
-# }
 
 def ComputeSolutionMinusOneE(elements, distributions, q):
-    for el in elements:
-        cond = distributions[el.type].Reverse(1 - (1 / len(elements)))
-        if el.value >= cond:
-            return el
+    x = 1 - (1 / len(elements))
+    mask = np.zeros(len(elements))
+    mask[elements.type == 0] = distributions[0].Reverse(np.array([x]))
+    mask[elements.type == 1] = distributions[1].Reverse(np.array([x]))
 
+    cond = elements.value >= mask
+    result = np.where(cond == True)
+    if np.sum(result) > 0:
+
+        return elements[result[0][0]]
+    
     return SecretaryInstance(-1, -1)
 
 
@@ -54,7 +40,7 @@ def ComputeSolutionThreeForth(elements, distributions, q):
 
 
 def ComputeSolutionDiffEq(elements, distributions, q):
-    diff_solution_50 = [
+    diff_solution_50 = np.array([
             1.00E+00, 9.73E-01, 9.45E-01, 9.18E-01, 8.91E-01, 8.63E-01, 8.36E-01,
             8.09E-01, 7.82E-01, 7.56E-01, 7.29E-01, 7.03E-01, 6.76E-01, 6.50E-01,
             6.24E-01, 5.99E-01, 5.74E-01, 5.49E-01, 5.24E-01, 4.99E-01, 4.75E-01,
@@ -62,8 +48,8 @@ def ComputeSolutionDiffEq(elements, distributions, q):
             2.98E-01, 2.77E-01, 2.58E-01, 2.39E-01, 2.20E-01, 2.02E-01, 1.85E-01,
             1.68E-01, 1.52E-01, 1.36E-01, 1.21E-01, 1.07E-01, 9.32E-02, 8.02E-02,
             6.78E-02, 5.60E-02, 4.50E-02, 3.46E-02, 2.49E-02, 1.59E-02, 7.65E-03,
-            1.95E-04]
-    diff_solution_1000 = [
+            1.95E-04])
+    diff_solution_1000 = np.array([
             1.00E+00, 9.99E-01, 9.97E-01, 9.96E-01, 9.95E-01, 9.93E-01, 9.92E-01,
             9.91E-01, 9.89E-01, 9.88E-01, 9.87E-01, 9.85E-01, 9.84E-01, 9.83E-01,
             9.81E-01, 9.80E-01, 9.79E-01, 9.77E-01, 9.76E-01, 9.74E-01, 9.73E-01,
@@ -206,15 +192,18 @@ def ComputeSolutionDiffEq(elements, distributions, q):
             9.85E-03, 9.45E-03, 9.06E-03, 8.67E-03, 8.28E-03, 7.89E-03, 7.50E-03,
             7.12E-03, 6.73E-03, 6.35E-03, 5.97E-03, 5.60E-03, 5.22E-03, 4.85E-03,
             4.48E-03, 4.11E-03, 3.74E-03, 3.38E-03, 3.01E-03, 2.65E-03, 2.30E-03,
-            1.94E-03, 1.59E-03, 1.24E-03, 8.87E-04, 5.40E-04, 1.95E-04]
+            1.94E-03, 1.59E-03, 1.24E-03, 8.87E-04, 5.40E-04, 1.95E-04])
 
     diff_solution = diff_solution_50 if len(elements) == 50 else diff_solution_1000
 
-    # pows = np.array(diff_solution) ** (1 / (len(elements) - 1))
-    for i in range(len(elements)):
-        pows = diff_solution[i] ** (1 / (len(elements) - 1))
-        cond = distributions[elements[i].type].Reverse(pows)
-        if elements[i].value >= cond:
-            return elements[i]
+    x = diff_solution ** (1 / (len(elements) - 1))
+    mask = np.zeros(len(elements))
+    mask[elements.type == 0] = distributions[0].Reverse(x[elements.type == 0])
+    mask[elements.type == 1] = distributions[1].Reverse(x[elements.type == 1])
+    cond = elements.value >= mask
+    result = np.where(cond == True)
+    if np.sum(result) > 0:
 
+        return elements[result[0][0]]
+    
     return SecretaryInstance(-1, -1)

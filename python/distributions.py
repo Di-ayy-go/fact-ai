@@ -25,8 +25,8 @@ class UniformDistribution(sc.distributions.rv_frozen):
     def PThreshold(self, index):
         return self.p_th[index]
 
-    def Sample(self):
-        return self.rvs()
+    def Sample(self, size):
+        return self.rvs(size=size)
 
     def Middle(self, n):
         return self.scale * (1 / 2) ** (1 / n)
@@ -46,14 +46,13 @@ class BinomialDistribution(sc.distributions.rv_frozen):
         probability = np.ones(n)
         r_probability = np.ones(n)
 
-        for i in range(n):
-            choose[i][0] = 1
+        choose[:, 0] = 1
 
         for i in range(1, n):
             for j in range(1, n):
                 choose[i][j] = choose[i - 1][j - 1] + choose[i - 1][j]
 
-        for i in range(n):
+        for i in range(1, n):
             probability[i] = probability[i - 1] * p
             r_probability[i] = r_probability[i - 1] * (1 - p)
 
@@ -66,19 +65,28 @@ class BinomialDistribution(sc.distributions.rv_frozen):
         return self.expect(lb=lower_bound)
 
     def Reverse(self, x):
-        for i in range(self.n + 1):
-            x -= self.choose[self.n][i] * self.probability[i] * self.r_probability[self.n - i]
+        a = np.cumsum(self.choose[self.n] * self.probability * self.r_probability[::-1])
+        c = x - a[..., None]
+        result = np.argmax(c <= 0, axis=0) / self.n
+        result[result == 0] = 1
+        return result
+        # result = np.ones(x.shape)
+        # for i in range(self.n + 1):
+        #     x -= self.choose[self.n][i] * self.probability[i] * self.r_probability[self.n - i]
+            
+        #     result[x<=0] = i / self.n
+        #     x[x<=0] = np.inf
 
-            if x <= 0:
-                return i / n
-
-        return 1
+        # return result
 
     def Sample(self, size):
-        rand = np.random.uniform(size)
+        rand = np.random.uniform(size=size)
         return (self.rvs(size=size) + rand) / len(self.probability)
 
     def Middle(self, n):
+        """
+        n is passed because for compatibility. It used in UniformDistribution.
+        """
         for i in range(len(self.max_dist) - 1, -1, -1):
             if self.max_dist[i] >= 0.5:
                 return i / (len(self.max_dist) - 1)
@@ -103,3 +111,6 @@ class BinomialDistribution(sc.distributions.rv_frozen):
         self.V = V
         self.p_th = p_th
         self.max_dist = max_dist
+
+    def PThreshold(self, index):
+        return self.p_th[index]

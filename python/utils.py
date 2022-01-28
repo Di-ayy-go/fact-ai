@@ -1,5 +1,20 @@
 import numpy as np
 
+class SecInstanceArray():
+    def __init__(self, values, colors, types=None):
+        self.value = values
+        self.color = colors
+        if types is not None:
+            self.type = types
+        else:
+            self.type = np.zeros(len(values), dtype=int)
+            
+    def __getitem__(self, key):
+        return SecretaryInstance(self.value[key], self.color[key], self.type[key])
+
+    def __len__(self):
+        return len(self.value)
+
 class SecretaryInstance():
     """docstring for SecretaryInstance."""
 
@@ -25,7 +40,7 @@ def GetThreshold(p):
 
         sum /= i
 
-        t[i] = t[i + 1] * ((sum - p[i]) / (sum - p[i + 1])) ** (1 / i)
+        t[i] = t[i + 1] * (((sum - p[i]) / (sum - p[i + 1])) ** (1 / i))
 
     t[0] = t[1] * np.exp(p[1] / p[0] - 1)
     return t
