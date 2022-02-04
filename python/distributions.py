@@ -3,13 +3,21 @@ from random_handler import RandomHandler
 import scipy.stats as sc
 
 class UniformDistribution(sc.distributions.rv_frozen):
-    """docstring for UniformDistribution."""
+    """
+    Wrapper for Scipy uniform distribution.
+    Contains additional methods needed to reproduce results of paper.
+    
+    args:
+        loc (int): mean of distribution
+        scale (int): range/standard deviation of distribution
+        n (int): number of samples to be generated 
+        (placeholder to make this class interchangable with BinomialDistribution)
+    """
 
     def __init__(self, loc, scale, n):
         super(UniformDistribution, self).__init__(sc.uniform, loc, scale)
         self.loc = loc
         self.scale = scale
-        self.n = n
 
         p_th = np.zeros(n)
         V = np.zeros(n)
@@ -23,20 +31,49 @@ class UniformDistribution(sc.distributions.rv_frozen):
         self.V = V
 
     def PThreshold(self, index):
+        """
+        Returns PThreshold value at index `index`
+
+        args:
+            index (int/list): indices to be retrieved
+        """
         return self.p_th[index]
 
     def Sample(self, size):
+        """
+        Wrapper for rvs sampling method for code clarity
+        and consistency with original C++ codebase
+
+        args:
+            size (int): number of samples to be generated
+        """
         return self.rvs(size=size)
 
     def Middle(self, n):
+        """
+        Computes middle value of distribution using `n` values.
+
+        args:
+            n (int): number of values to consider to calculate middle.
+        """
         return self.scale * (1 / 2) ** (1 / n)
 
     def Reverse(self, x):
+        """
+        Returns 
+        """
         return x * self.scale
 
 
 class BinomialDistribution(sc.distributions.rv_frozen):
-    """docstring for BinomialDistribution."""
+    """
+    Wrapper for Scipy binomial distribution.
+    Contains additional methods needed to reproduce results of paper.
+    
+    args:
+        n (int): number of independent experiments
+        p (int): probability of success of Bernoulli trial
+    """
 
     def __init__(self, n, p):
         super(BinomialDistribution, self).__init__(sc.binom, n, p)
@@ -59,27 +96,45 @@ class BinomialDistribution(sc.distributions.rv_frozen):
         self.choose = choose
         self.probability = probability
         self.r_probability = r_probability
-        self.ComputeMaxDist(n)
+        self._ComputeMaxDist(n)
 
     def Expected(self, lower_bound):
-        return self.expect(lb=lower_bound)
+        """
+        Calculates expected value using lower bound.
+        Based on implementation in C++ repo.
+
+        args:
+            lower_bound (int): lower bound of expected value
+        """
+        ans = 0
+        rang = 0
+        n = len(self.probability) - 1
+        i = int(np.ceil(lower_bound * n))
+        while i <= n:
+            ans += self.probability[i] * self.r_probability[n - i] * self.choose[n][i] * i / n;
+            rang += self.probability[i] * self.r_probability[n - i] * self.choose[n][i];
+            i += 1
+    
+        return ans / rang
 
     def Reverse(self, x):
+        """
+        Computes reverse of x using numpy arrays for efficiency
+        """
         a = np.cumsum(self.choose[self.n] * self.probability * self.r_probability[::-1])
         c = x - a[..., None]
         result = np.argmax(c <= 0, axis=0) / self.n
         result[result == 0] = 1
         return result
-        # result = np.ones(x.shape)
-        # for i in range(self.n + 1):
-        #     x -= self.choose[self.n][i] * self.probability[i] * self.r_probability[self.n - i]
-            
-        #     result[x<=0] = i / self.n
-        #     x[x<=0] = np.inf
-
-        # return result
 
     def Sample(self, size):
+        """
+        Wrapper for rvs sampling method for code clarity
+        and consistency with original C++ codebase
+
+        args:
+            size (int): number of samples to be generated
+        """
         rand = np.random.uniform(size=size)
         return (self.rvs(size=size) + rand) / len(self.probability)
 
@@ -93,7 +148,10 @@ class BinomialDistribution(sc.distributions.rv_frozen):
 
         return 0
 
-    def ComputeMaxDist(self, num_dists):
+    def _ComputeMaxDist(self, num_dists):
+        """
+        Internal method for computing max_dist array.
+        """
         max_dist = np.zeros(len(self.probability))
         x = 0
         n = self.n

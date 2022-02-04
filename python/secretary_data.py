@@ -43,6 +43,7 @@ def GetSecretaryInputBank(num_elements):
 
     return instance
 
+
 def CalculateBMI(weight, height):
     """
     This function calculates the BMI for a given weight 
@@ -74,6 +75,7 @@ def CalculateBMI(weight, height):
         return 4 
         
     print("ERROR", weight, height)
+
 
 def GetPokecNodes():
     """
@@ -116,6 +118,7 @@ def GetPokecNodes():
 
     return nodes, ids
 
+
 def GetPokecDegrees():
     """
     This function returns the degrees (number of relations) 
@@ -148,6 +151,7 @@ def GetPokecDegrees():
 
     return degrees
 
+
 def GetSecretaryInputPokec(num_elements):
     """
     This function generates a list of candidatates
@@ -179,6 +183,7 @@ def GetSecretaryInputPokec(num_elements):
         pickle.dump(instance, f)
 
     return instance
+
 
 def GetSecretaryInputUfrgs(num_elements):
     """

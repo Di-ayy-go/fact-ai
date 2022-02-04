@@ -2,9 +2,8 @@ from utils import SecretaryInstance
 from random_handler import RandomHandler
 import numpy as np
 import sys
-seed = 42
-rh = RandomHandler(42)
 
+rh = RandomHandler()
 def ComputeSolution(elements):
     """
     This function returns the best candidate for a list
@@ -31,6 +30,7 @@ def ComputeSolution(elements):
 
     return SecretaryInstance(-1, -1)
 
+
 def ComputeSolutionOpt(elements, element_values):
     max_value = 0
 
@@ -46,7 +46,6 @@ def ComputeSolutionOpt(elements, element_values):
     else:
         return elements[(np.min(indice_matches) + th)]
 
-    
 
 def ComputeSolutionSingleColor(elements, prob):
     """
@@ -94,6 +93,8 @@ def ComputeSolutionSingleColorOpt(elements, element_colors, element_values, prob
 
     args:
         elements (list): list of candidates
+        element_colors (np.array): list of colors/groups of each candidate
+        element_values (np.array): list of values of each candidate
         prob (list): list of probabilties used by algorithm
 
     returns:

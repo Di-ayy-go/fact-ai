@@ -1,6 +1,19 @@
 import numpy as np
 
 def Eval(instance, answer, num_colors):
+    """
+    Evaluates results from selection algorithms in accordance to C++ code.
+
+    args:
+        instance (list/SecInstanceArray): object containing all instances
+        answer (list): object containing answers for all runs
+        num_colors (int): number of colors/groups in the candidates
+
+    returns:
+        color (list): color distribution
+        num_answer (list): number of times a candidate was selected per color/group
+        correct_answer (list): number of times the algorithm picked the right answer per color/group
+    """
     max_value = np.zeros(num_colors)
     correct_answer = np.zeros(num_colors)
     num_answer =  np.zeros(num_colors)
@@ -43,13 +56,13 @@ def Eval(instance, answer, num_colors):
     print('Answer Distribution: \n')
 
     for i in range(num_colors):
-        print(num_answer[i])
+        print(num_answer[i], end=" ")
 
     print('\n')
     print('Correct Answer Distribution: \n')
 
     for i in range(num_colors):
-        print(correct_answer[i])
+        print(correct_answer[i], end=" ")
 
     print('\n')
     print(f"Total Correct Answer: {total_correct_answer}")
@@ -59,7 +72,10 @@ def Eval(instance, answer, num_colors):
 
     return color, num_answer, correct_answer
 
+
 def ThEval(instance, answers, num_colors):
+    """
+    """
     total_max = 0
     not_picked = 0
 
@@ -78,8 +94,11 @@ def ThEval(instance, answers, num_colors):
 
     return
 
+
 def InnerUnbalanced(instance, ans, correct_answer, num_answer, max_dist,
                     num_colors, not_picked, total_correct_answer):
+    """
+    """
 
     max_value = np.zeros(num_colors)
     total_max = 0

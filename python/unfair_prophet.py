@@ -1,7 +1,19 @@
-from utils import SecretaryInstance
+from utils import SecretaryInstance, filterElements
 import numpy as np
 
 def ComputeSolutionOneHalf(elements, distributions, q):
+    """
+    This function returns the best candidate for a list
+    of candidates, using the SC algorithm .
+
+    args:
+        elements (SecInstanceArray): array containing instances
+        distributions (list): list containing arrival order distributions
+        q (list): offline fair optimal algorithm selection probabilities 
+
+    returns:
+        best candidate object
+    """    
     mask = np.zeros(len(elements))
     mask[elements.type == 0] = distributions[0].Middle(len(elements))
     mask[elements.type == 1] = distributions[1].Middle(len(elements))
@@ -16,6 +28,18 @@ def ComputeSolutionOneHalf(elements, distributions, q):
 
 
 def ComputeSolutionMinusOneE(elements, distributions, q):
+    """
+    This function returns the best candidate for a list
+    of candidates, using the EHKS algorithm.
+
+    args:
+        elements (SecInstanceArray): array containing instances
+        distributions (list): list containing arrival order distributions
+        q (list): offline fair optimal algorithm selection probabilities 
+
+    returns:
+        best candidate object
+    """    
     x = 1 - (1 / len(elements))
     mask = np.zeros(len(elements))
     mask[elements.type == 0] = distributions[0].Reverse(np.array([x]))
@@ -31,6 +55,18 @@ def ComputeSolutionMinusOneE(elements, distributions, q):
 
 
 def ComputeSolutionThreeForth(elements, distributions, q):
+    """
+    This function returns the best candidate for a list
+    of candidates, using the DP algorithm.
+
+    args:
+        elements (SecInstanceArray): array containing instances
+        distributions (list): list containing arrival order distributions
+        q (list): offline fair optimal algorithm selection probabilities 
+
+    returns:
+        best candidate object
+    """
     for i in range(len(elements)):
         cond = distributions[elements[i].type].PThreshold(i)
         if elements[i].value >= cond:
@@ -40,6 +76,18 @@ def ComputeSolutionThreeForth(elements, distributions, q):
 
 
 def ComputeSolutionDiffEq(elements, distributions, q):
+    """
+    This function returns the best candidate for a list
+    of candidates, using the CFHOV algorithm.
+
+    args:
+        elements (SecInstanceArray): array containing instances
+        distributions (list): list containing arrival order distributions
+        q (list): offline fair optimal algorithm selection probabilities 
+
+    returns:
+        best candidate object
+    """
     diff_solution_50 = np.array([
             1.00E+00, 9.73E-01, 9.45E-01, 9.18E-01, 8.91E-01, 8.63E-01, 8.36E-01,
             8.09E-01, 7.82E-01, 7.56E-01, 7.29E-01, 7.03E-01, 6.76E-01, 6.50E-01,
@@ -195,15 +243,5 @@ def ComputeSolutionDiffEq(elements, distributions, q):
             1.94E-03, 1.59E-03, 1.24E-03, 8.87E-04, 5.40E-04, 1.95E-04])
 
     diff_solution = diff_solution_50 if len(elements) == 50 else diff_solution_1000
-
-    x = diff_solution ** (1 / (len(elements) - 1))
-    mask = np.zeros(len(elements))
-    mask[elements.type == 0] = distributions[0].Reverse(x[elements.type == 0])
-    mask[elements.type == 1] = distributions[1].Reverse(x[elements.type == 1])
-    cond = elements.value >= mask
-    result = np.where(cond == True)
-    if np.sum(result) > 0:
-
-        return elements[result[0][0]]
-    
-    return SecretaryInstance(-1, -1)
+    condition = diff_solution ** (1 / (len(elements) - 1))
+    return filterElements(elements, distributions, condition)

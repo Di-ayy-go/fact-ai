@@ -3,8 +3,18 @@ import numpy as np
 from utils import SecretaryInstance, SecInstanceArray
 from random_handler import RandomHandler
 
-rh = RandomHandler(432)
-def GetSecretaryInput(sizes: list, prob = []):
+rh = RandomHandler()
+def GetSecretaryInput(sizes, prob = []):
+    """
+    Generates SecretaryInstance for secretary experiments.
+
+    args:
+        sizes (list): sizes for each color/group
+        prob (list): probability that best candidate is from respective group
+
+    returns:
+        instance (list): list of SecretaryInstance objects
+    """
     num_colors = len(sizes)
     instance = []
     rand = 2.0
@@ -26,12 +36,22 @@ def GetSecretaryInput(sizes: list, prob = []):
     return instance
 
 
-def GetProphetInput(size: int, dist):
+def GetProphetInput(size, dist):
+    """
+    Generates SecInstanceArray for prophet experiments.
+
+    args:
+        size (int): number of colors/groups
+        prob (list): probability that best candidate is from respective group
+
+    returns:
+        instance (SecInstanceArray): array containing instances
+    """
     num_colors = size
     instance = []
     dist_0 = dist[0].Sample(size // 2)
     dist_1 = dist[1].Sample(size // 2)
-    dists = np.array([dist_0, dist_1]).flatten()
+    values = np.array([dist_0, dist_1]).flatten()
     types = np.array([np.zeros(size // 2, dtype=int), np.ones(size // 2, dtype=int)]).flatten()
-    instance = SecInstanceArray(dists, np.arange(size), types)
+    instance = SecInstanceArray(values, np.arange(size), types)
     return instance
